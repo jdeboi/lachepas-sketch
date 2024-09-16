@@ -115,6 +115,8 @@ function draw() {
   push();
   circleSize += 0.5; // += operator adds two values together and assigns the result to a variable
   circleSize = constrain(circleSize, 0, 3000);
+  displayStars();
+  displayWaves();
 
   // displayWaves();
 
@@ -133,11 +135,11 @@ function draw() {
   // fill(255);
   // displayTextAroundCircle("Circular Text Wrap", circleSize/10, 15);
   // displayCircleText();
+
   egret.display(this);
   moon.display(this);
   pop();
 
-  displayStars();
   // displayFramerate();
 }
 
@@ -172,9 +174,9 @@ function initStars() {
   let x = 10;
   while (x < width) {
     x += random(10, 20);
-    let y = random(0, egret.y + egret.h + 50);
-    let maxSize = random(2, 4);
-    let minSize = random(1, 2);
+    let y = random(0, height * 0.3);
+    let maxSize = random(3, 5);
+    let minSize = random(2, 3);
     stars.push(new TwinklingStar(x, y, maxSize, minSize));
   }
 }
@@ -186,5 +188,49 @@ function displayStars() {
     star.update();
     star.display();
   }
+  pop();
+}
+
+function displayWaves() {
+  colorMode(HSB, 360);
+  noStroke();
+  let waveCount = 10;
+
+  for (let i = 0; i < waveCount; i++) {
+    wave(
+      map(i, 0, waveCount, 220, 250),
+      map(i, 0, waveCount, 200, 100),
+      height / 2 + pow(i, 2.5) + 0 * (i + 1),
+      map(i, 0, waveCount, 0.1, 0.75),
+      map(i, 0, waveCount, 4, 15)
+    );
+  }
+  colorMode(RGB, 255);
+}
+
+function wave(waveHue, waveBrightness, waveHeight, speed, amp) {
+  push();
+  translate(-width / 2, -height / 2);
+  fill(waveHue, 255, waveBrightness);
+
+  let count = 25;
+
+  beginShape();
+
+  vertex(0, waveHeight / 2);
+  vertex(0, waveHeight / 2);
+
+  for (let x = 0; x < width; x += width / count) {
+    let y = waveHeight / 2 + sin(frameCount * 0.02 - x * speed) * amp;
+    curveVertex(x, y);
+  }
+
+  vertex(width, waveHeight / 2);
+  vertex(width, waveHeight / 2);
+  vertex(width, height);
+  vertex(0, height);
+  vertex(0, waveHeight / 2);
+
+  endShape();
   pop();
 }
